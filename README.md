@@ -1,4 +1,4 @@
-# Competitive Intelligence CLI
+# Competitive Intelligence CLI which use with QBack.AI
 
 > ⚠️ **IMPORTANT DISCLAIMER**: This is a very simplified version of competitive intelligence tools. Please make your own version, edit your own prompts, and do your own setup as per whatever you want to do. This tool is provided as a starting point and should be customized for your specific needs and use cases.
 
