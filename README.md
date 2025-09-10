@@ -3,6 +3,7 @@
 > ⚠️ **IMPORTANT DISCLAIMER**: This is a very simplified version of competitive intelligence tools. Please make your own version, edit your own prompts, and do your own setup as per whatever you want to do. This tool is provided as a starting point and should be customized for your specific needs and use cases.
 
 A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights.
+I run this along side QBack.AI for both buyer + competitor analysis and create all sales and launch assets like battlecard, FAQs, sales objections, feature matrix, etc.
 
 ## Features
 
