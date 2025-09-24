@@ -1,6 +1,6 @@
 # Competitive Intelligence CLI I use with QBack.AI
 
-A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights. Perfect for product marketing teams who need to analyze competitors and create sales assets like battlecards, FAQs, sales objections, and feature matrices. It built on the Crawl4AI scraper (open-source).
+A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights. Perfect for product marketing teams who need to analyze competitors and create sales assets like battlecards, FAQs, sales objections, and feature matrices. It built on the Crawl4AI scraper [https://github.com/unclecode/crawl4ai](url) (open source)
 
 ## 📧 Newsletter
 
