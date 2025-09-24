@@ -314,14 +314,14 @@ class CompetitiveIntelligenceCLI:
                     return
             else:
                 # Single selection
-                choice = int(choice_input)
-                if 1 <= choice <= len(available_sources):
-                    data_source = available_sources[choice - 1]
-                elif choice == len(available_sources) + 1:
-                    data_source = 'all'
-                else:
-                    print("❌ Invalid choice.")
-                    return
+            choice = int(choice_input)
+            if 1 <= choice <= len(available_sources):
+                data_source = available_sources[choice - 1]
+            elif choice == len(available_sources) + 1:
+                data_source = 'all'
+            else:
+                print("❌ Invalid choice.")
+                return
         except ValueError:
             print("❌ Invalid input. Please enter numbers separated by commas.")
             return
@@ -481,7 +481,7 @@ class CompetitiveIntelligenceCLI:
                 
         except Exception as e:
             print(f"❌ Error during SEO analysis: {e}")
-        
+    
         # Always wait for user to press Enter before returning to menu
         self.safe_input("\nPress Enter to continue...")
     
