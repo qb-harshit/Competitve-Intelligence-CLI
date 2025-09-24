@@ -1,20 +1,14 @@
-<<<<<<< HEAD
----
-Competitive Intelligence CLI which I use with QBack.AI
-=======
-# Competitive Intelligence CLI which I use with QBack.AI
+# Competitive Intelligence CLI
 
->>>>>>> 540c3f6c5b789b8087286cd8333829f948826030
-subscribe to my newsletter as I build apps like these for product marketing use cases: https://newsletter.qback.ai/
+A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights. Perfect for product marketing teams who need to analyze competitors and create sales assets like battlecards, FAQs, sales objections, and feature matrices.
 
-⚠️ IMPORTANT DISCLAIMER: This is a very simplified version of competitive intelligence tools. Please make your own version, edit your own prompts, and do your own setup as per whatever you want to do. This tool is provided as a starting point and should be customized for your specific needs and use cases.
+## 📧 Newsletter
 
-<<<<<<< HEAD
-A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights. I run this along side QBack.AI for both buyer + competitor analysis and create all sales and launch assets like battlecard, FAQs, sales objections, feature matrix, etc.
-=======
-A powerful command-line tool for scraping and analyzing competitor websites to gather competitive intelligence insights.
-I run this along side [QBack.AI](https://www.qback.ai/) for both buyer + competitor analysis and create all sales and launch assets like battlecard, FAQs, sales objections, feature matrix, etc.
->>>>>>> 540c3f6c5b789b8087286cd8333829f948826030
+Subscribe to my newsletter as I build apps like these for product marketing use cases: [https://newsletter.qback.ai/](https://newsletter.qback.ai/)
+
+## ⚠️ Important Disclaimer
+
+This is a simplified version of competitive intelligence tools. Please make your own version, edit your own prompts, and do your own setup as per your specific needs. This tool is provided as a starting point and should be customized for your specific use cases.
 
 ## Features
 
