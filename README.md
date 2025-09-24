@@ -128,8 +128,6 @@ Extract frequently asked questions and common concerns
 - **Service Availability**: Detects B2B service status (available now, contact sales, enterprise ready, etc.)
 - **Deployment Options**: Identifies cloud, SaaS, on-premise, hybrid deployment models
 - **Contact Requirements**: Tracks B2B sales processes (contact sales, request demo, custom pricing)
-- **Price Tracking**: Monitors B2B pricing changes over time with percentage calculations
-- **Alerts**: Get notified when enterprise pricing changes by specified thresholds
 
 ### B2B SEO Analysis
 - **Enterprise Meta Tags**: Extracts B2B-focused meta tags including Open Graph, Twitter Cards
