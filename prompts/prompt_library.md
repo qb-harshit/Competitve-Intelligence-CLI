@@ -1,59 +1,146 @@
-# Competitive Intelligence Prompt Library
+# B2B Competitive Intelligence Prompt Library
 
-Copy and paste these prompts into the CLI for analysis.
+Copy and paste these B2B-focused prompts into the CLI for analysis.
 
-## Feature Analysis
-Extract all features and their descriptions from the content
+## B2B Feature Analysis
+Extract all enterprise features and their descriptions from the content
 
-List all product features mentioned
+List all B2B product features and capabilities mentioned
 
-Identify key capabilities and functionalities
+Identify enterprise-grade functionalities and scalability features
 
-## Pricing Analysis
-Find pricing information and plans
+Find API capabilities and integration features
 
-Extract all pricing details and cost structures
+Extract security and compliance features
 
-Identify free vs paid features
+Identify automation and workflow capabilities
 
-## Competitive Analysis
-Identify strengths and weaknesses
+## B2B Pricing Analysis
+Find enterprise pricing information and plans
 
-Find competitive advantages mentioned
+Extract all B2B pricing details and cost structures
 
-Extract market positioning statements
+Identify enterprise vs professional vs basic plan differences
 
-## Technical Analysis
-List all API endpoints mentioned
+Find per-user, per-seat, or per-license pricing models
 
-Find technical specifications and requirements
+Extract custom pricing and "contact sales" requirements
 
-Extract integration capabilities
+Identify free trials, demos, and enterprise evaluation options
 
-## Business Analysis
-Find funding and investment information
+Find volume discounts and enterprise pricing tiers
 
-Extract company milestones and achievements
+## B2B Competitive Analysis
+Identify B2B strengths and weaknesses
 
-Identify key partnerships and collaborations
+Find enterprise competitive advantages mentioned
 
-## Customer Analysis
-Extract customer success stories and case studies
+Extract B2B market positioning statements
 
-Find customer names, companies, and use cases
+Identify enterprise target markets and customer segments
 
-Extract customer quotes with names and titles
+Find competitive differentiators in enterprise features
 
-List all customer testimonials and reviews
+Extract enterprise value propositions and ROI claims
 
-## FAQ Analysis
-Extract frequently asked questions and common concerns
+## B2B Technical Analysis
+List all API endpoints and developer resources mentioned
 
-Find common customer pain points and issues
+Find enterprise technical specifications and requirements
 
-Identify feature limitations and restrictions
+Extract B2B integration capabilities and partnerships
 
-Extract support and troubleshooting information
+Identify enterprise deployment options (cloud, on-premise, hybrid)
 
-## Custom Prompts
-Add your own prompts here as you create them...
+Find security and compliance technical details
+
+Extract enterprise scalability and performance specifications
+
+Identify enterprise support and SLA information
+
+## B2B Business Analysis
+Find enterprise funding and investment information
+
+Extract B2B company milestones and achievements
+
+Identify enterprise partnerships and collaborations
+
+Find enterprise customer logos and case studies
+
+Extract enterprise market size and growth metrics
+
+Identify enterprise sales channels and reseller programs
+
+Find enterprise customer success metrics and ROI data
+
+## B2B Customer Analysis
+Extract enterprise customer success stories and case studies
+
+Find enterprise customer names, companies, and use cases
+
+Extract enterprise customer quotes with names and titles
+
+List all enterprise customer testimonials and reviews
+
+Identify enterprise customer industries and verticals
+
+Extract enterprise customer ROI and business impact metrics
+
+Find enterprise customer implementation timelines and results
+
+## B2B FAQ Analysis
+Extract enterprise frequently asked questions and common concerns
+
+Find enterprise customer pain points and issues
+
+Identify enterprise feature limitations and restrictions
+
+Extract enterprise support and troubleshooting information
+
+Find enterprise security and compliance questions
+
+Identify enterprise integration and deployment questions
+
+Extract enterprise pricing and contract questions
+
+## B2B Sales & Marketing Analysis
+Extract enterprise sales processes and contact requirements
+
+Find enterprise demo and trial information
+
+Identify enterprise marketing channels and strategies
+
+Extract enterprise content marketing and thought leadership
+
+Find enterprise event and conference participation
+
+Identify enterprise lead generation and nurturing tactics
+
+## B2B Security & Compliance Analysis
+Extract enterprise security certifications and compliance standards
+
+Find enterprise data protection and privacy measures
+
+Identify enterprise audit and compliance reporting
+
+Extract enterprise security features and controls
+
+Find enterprise backup and disaster recovery capabilities
+
+Identify enterprise access control and user management
+
+## B2B Integration & API Analysis
+Extract enterprise API documentation and capabilities
+
+Find enterprise integration partners and connectors
+
+Identify enterprise webhook and real-time integration options
+
+Extract enterprise data import/export capabilities
+
+Find enterprise third-party integrations and marketplace
+
+Identify enterprise custom integration and development options
+
+## Custom B2B Prompts
+Add your own B2B-focused prompts here as you create them...

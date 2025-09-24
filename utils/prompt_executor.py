@@ -79,39 +79,32 @@ class PromptExecutor:
             company_dir = self.data_dir / company_name.lower().replace(' ', '_')
             company_dir.mkdir(exist_ok=True)
             
-            # Markdown file path
-            markdown_file = company_dir / "detailed_competitive_analysis.md"
-            
-            # Check if file exists to determine if we need to create header
-            file_exists = markdown_file.exists()
+            # Markdown file path - use the analysis name provided by user
+            safe_analysis_name = analysis_name.lower().replace(' ', '_').replace('/', '_').replace('\\', '_')
+            markdown_file = company_dir / f"{safe_analysis_name}.md"
             
             # Prepare the analysis content
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            analysis_content = f"""
-## {analysis_name}
-**Date:** {timestamp}
+            
+            # Create complete markdown content for new file
+            markdown_content = f"""# {company_name} - {analysis_name}
+
+**Analysis Date:** {timestamp}
+**Analysis Type:** {analysis_name}
+
+---
 
 {result}
 
 ---
-
+*Analysis completed on {timestamp}*
 """
             
-            # Append to markdown file
-            with open(markdown_file, 'a', encoding='utf-8') as f:
-                if not file_exists:
-                    # Create header for new file
-                    header = f"""# {company_name} - Detailed Competitive Analysis
-
-This document contains all competitive intelligence analysis results for {company_name}.
-
----
-"""
-                    f.write(header)
-                
-                f.write(analysis_content)
+            # Create new markdown file (overwrite if exists)
+            with open(markdown_file, 'w', encoding='utf-8') as f:
+                f.write(markdown_content)
             
-            print(f"📄 Analysis added to markdown report: {markdown_file}")
+            print(f"📄 Analysis saved to: {markdown_file}")
             return True
             
         except Exception as e:
@@ -128,6 +121,10 @@ This document contains all competitive intelligence analysis results for {compan
         if company_data.get('features'):
             for feature_name in company_data['features'].keys():
                 sources.append(f'feature:{feature_name}')
+        
+        if company_data.get('seo_data'):
+            for seo_name in company_data['seo_data'].keys():
+                sources.append(f'seo_analysis:{seo_name}')
         
         return sources
     
@@ -146,6 +143,48 @@ This document contains all competitive intelligence analysis results for {compan
                 return features[feature_name].get('content', '')
             return ''
         
+        elif data_source.startswith('seo_analysis:'):
+            seo_name = data_source.replace('seo_analysis:', '')
+            seo_data = company_data.get('seo_data', {})
+            if seo_name in seo_data:
+                seo_info = seo_data[seo_name]
+                # Format SEO data for analysis
+                content = f"SEO Analysis for: {seo_info.get('url', 'Unknown URL')}\n"
+                content += f"Analysis Date: {seo_info.get('scraped_at', 'Unknown')}\n\n"
+                
+                # Add meta tags
+                meta_tags = seo_info.get('meta_tags', {})
+                content += "META TAGS:\n"
+                content += f"Title: {meta_tags.get('title', 'Not found')}\n"
+                content += f"Description: {meta_tags.get('description', 'Not found')}\n"
+                content += f"Keywords: {meta_tags.get('keywords', 'Not found')}\n\n"
+                
+                # Add Open Graph tags
+                og_tags = meta_tags.get('og_tags', [])
+                if og_tags:
+                    content += "OPEN GRAPH TAGS:\n"
+                    for tag in og_tags:
+                        content += f"- {tag['property']}: {tag['content']}\n"
+                    content += "\n"
+                
+                # Add Twitter Card tags
+                twitter_tags = meta_tags.get('twitter_tags', [])
+                if twitter_tags:
+                    content += "TWITTER CARD TAGS:\n"
+                    for tag in twitter_tags:
+                        content += f"- {tag['name']}: {tag['content']}\n"
+                    content += "\n"
+                
+                # Add SEO analysis
+                seo_analysis = seo_info.get('seo_analysis', {})
+                content += "SEO ANALYSIS:\n"
+                content += f"SEO Score: {seo_analysis.get('score', 'N/A')}/100\n"
+                content += f"Grade: {seo_analysis.get('grade', 'N/A')}\n"
+                content += f"Analysis: {seo_analysis.get('analysis', 'No analysis available')}\n"
+                
+                return content
+            return ''
+        
         elif data_source == 'all':
             # Combine all content
             all_content = []
@@ -161,11 +200,18 @@ This document contains all competitive intelligence analysis results for {compan
                 if feature_data.get('content'):
                     all_content.append(f"FEATURE: {feature_name}\nURL: {feature_data.get('url', 'Unknown')}\nCONTENT:\n{feature_data['content']}\n")
             
+            # Add SEO data content
+            seo_data = company_data.get('seo_data', {})
+            for seo_name, seo_info in seo_data.items():
+                seo_content = self.extract_content_for_analysis(company_data, f'seo_analysis:{seo_name}')
+                if seo_content:
+                    all_content.append(f"SEO ANALYSIS: {seo_name}\n{seo_content}\n")
+            
             return '\n'.join(all_content)
         
         return ''
     
-    def run_analysis_prompt(self, company_name: str, prompt: str, data_source: str = 'all') -> str:
+    def run_analysis_prompt(self, company_name: str, prompt: str, data_source = 'all') -> str:
         """Run analysis prompt on company data"""
         print(f"\n🔍 Running Analysis Prompt")
         print(f"Company: {company_name}")
@@ -183,16 +229,36 @@ This document contains all competitive intelligence analysis results for {compan
         if not available_sources:
             return "❌ No data available for analysis"
         
-        # Validate data source
-        if data_source != 'all' and data_source not in available_sources:
-            print(f"❌ Invalid data source: {data_source}")
-            print(f"Available sources: {', '.join(available_sources)}")
-            return "❌ Invalid data source specified"
-        
-        # Extract content
-        content = self.extract_content_for_analysis(company_data, data_source)
-        if not content:
-            return "❌ No content found in specified data source"
+        # Handle multiple data sources
+        if isinstance(data_source, list):
+            # Multiple sources selected
+            print(f"📊 Analyzing multiple sources: {', '.join(data_source)}")
+            content_parts = []
+            for source in data_source:
+                if source not in available_sources:
+                    print(f"⚠️ Skipping invalid source: {source}")
+                    continue
+                source_content = self.extract_content_for_analysis(company_data, source)
+                if source_content:
+                    content_parts.append(f"=== {source.upper()} ===\n{source_content}")
+            
+            if not content_parts:
+                return "❌ No valid content found in selected sources"
+            
+            content = "\n\n".join(content_parts)
+            
+        else:
+            # Single source or 'all'
+            # Validate data source
+            if data_source != 'all' and data_source not in available_sources:
+                print(f"❌ Invalid data source: {data_source}")
+                print(f"Available sources: {', '.join(available_sources)}")
+                return "❌ Invalid data source specified"
+            
+            # Extract content
+            content = self.extract_content_for_analysis(company_data, data_source)
+            if not content:
+                return "❌ No content found in specified data source"
         
         print(f"📊 Content length: {len(content)} characters")
         

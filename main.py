@@ -12,27 +12,35 @@ from datetime import datetime
 from pathlib import Path
 from scrapers.homepage_scraper import HomepageScraper
 from scrapers.sitemap_analyzer import SitemapAnalyzer
+from scrapers.price_stock_scraper import PriceStockScraper
+from scrapers.meta_seo_scraper import MetaSEOScraper
 from utils.prompt_executor import PromptExecutor
 
 class CompetitiveIntelligenceCLI:
     def __init__(self):
         self.data_dir = Path("data/companies")
         self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.current_company = None  # Track current company session
         
     def display_menu(self):
         """Display the main menu"""
-        print("\n" + "="*50)
-        print("🤖 Competitive Intelligence CLI")
-        print("="*50)
+        print("\n" + "="*60)
+        print("🏢 B2B Competitive Intelligence CLI")
+        if self.current_company:
+            print(f"📊 Current Company: {self.current_company}")
+        else:
+            print("📊 No company selected")
+        print("="*60)
         print("1. Add new company")
         print("2. Scrape homepage")
         print("3. Analyze sitemap")
         print("4. Run analysis prompt")
-        print("5. Check for updates")
-        print("6. View company data")
-        print("7. List all companies")
-        print("8. Exit")
-        print("="*50)
+        print("5. Scrape pricing & availability data")
+        print("6. Analyze SEO & meta tags")
+        print("7. View company data")
+        print("8. List all companies")
+        print("9. Exit")
+        print("="*60)
         
     def safe_input(self, prompt):
         """Safely get user input with proper error handling"""
@@ -51,13 +59,72 @@ class CompetitiveIntelligenceCLI:
     def get_user_choice(self):
         """Get user menu choice"""
         while True:
-            choice = self.safe_input("\nChoose option (1-8): ")
+            choice = self.safe_input("\nChoose option (1-9): ")
             if choice is None:
                 return None
-            if choice in ['1', '2', '3', '4', '5', '6', '7', '8']:
+            if choice in [str(i) for i in range(1, 10)]:
                 return int(choice)
             else:
-                print("❌ Invalid choice. Please enter a number between 1-8.")
+                print("❌ Invalid choice. Please enter a number between 1-9.")
+                # Don't continue the loop immediately, let user see the error
+                continue
+    
+    def get_current_company(self):
+        """Get current company or ask user to select one"""
+        if self.current_company:
+            return self.current_company
+        
+        # If no current company, ask user to select one
+        print("\n📋 No company selected. Please choose:")
+        print("1. Add new company")
+        print("2. Select existing company")
+        
+        choice = self.safe_input("Choose option (1-2): ")
+        if choice == "1":
+            return self.add_company()
+        elif choice == "2":
+            return self.select_existing_company()
+        else:
+            print("❌ Invalid choice.")
+            return None
+    
+    def select_existing_company(self):
+        """Select from existing companies"""
+        company_files = list(self.data_dir.glob("*_data.json"))
+        
+        if not company_files:
+            print("📭 No companies found. Please add a company first.")
+            return None
+        
+        print("\n📋 Available companies:")
+        companies = []
+        for i, company_file in enumerate(company_files, 1):
+            try:
+                with open(company_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                company_name = data.get('company_name', 'Unknown')
+                companies.append(company_name)
+                print(f"{i}. {company_name}")
+            except Exception as e:
+                print(f"❌ Error reading {company_file}: {e}")
+        
+        if not companies:
+            print("📭 No valid companies found.")
+            return None
+        
+        try:
+            choice = self.safe_input(f"\nSelect company (1-{len(companies)}): ")
+            if choice and choice.isdigit():
+                idx = int(choice) - 1
+                if 0 <= idx < len(companies):
+                    self.current_company = companies[idx]
+                    print(f"✅ Selected company: {self.current_company}")
+                    return self.current_company
+        except Exception as e:
+            print(f"❌ Error selecting company: {e}")
+        
+        print("❌ Invalid selection.")
+        return None
     
     def add_company(self):
         """Add a new company to track"""
@@ -67,13 +134,14 @@ class CompetitiveIntelligenceCLI:
         company_name = self.safe_input("Enter company name: ")
         if not company_name:
             print("❌ Company name cannot be empty.")
-            return
+            return None
             
         # Check if company already exists
         company_file = self.data_dir / f"{company_name.lower().replace(' ', '_')}_data.json"
         if company_file.exists():
-            print(f"❌ Company '{company_name}' already exists.")
-            return
+            print(f"✅ Company '{company_name}' already exists. Setting as current company.")
+            self.current_company = company_name
+            return company_name
             
         # Create initial company data structure
         company_data = {
@@ -91,8 +159,11 @@ class CompetitiveIntelligenceCLI:
                 json.dump(company_data, f, indent=2, ensure_ascii=False)
             print(f"✅ Company '{company_name}' added successfully!")
             print(f"📁 Data saved to: {company_file}")
+            self.current_company = company_name
+            return company_name
         except Exception as e:
             print(f"❌ Error saving company data: {e}")
+            return None
     
     def list_companies(self):
         """List all tracked companies"""
@@ -129,15 +200,8 @@ class CompetitiveIntelligenceCLI:
         print("\n🕷️ Scrape Homepage")
         print("-" * 30)
         
-        company_name = self.safe_input("Enter company name: ")
+        company_name = self.get_current_company()
         if not company_name:
-            print("❌ Company name cannot be empty.")
-            return
-            
-        # Check if company exists
-        company_file = self.data_dir / f"{company_name.lower().replace(' ', '_')}_data.json"
-        if not company_file.exists():
-            print(f"❌ Company '{company_name}' not found. Add the company first.")
             return
             
         url = self.safe_input("Enter homepage URL: ")
@@ -161,21 +225,17 @@ class CompetitiveIntelligenceCLI:
                 
         except Exception as e:
             print(f"❌ Error during scraping: {e}")
+        
+        # Always wait for user to press Enter before returning to menu
+        self.safe_input("\nPress Enter to continue...")
 
     def analyze_sitemap(self):
         """Analyze sitemap and scrape feature pages"""
         print("\n🗺️ Analyze Sitemap")
         print("-" * 30)
         
-        company_name = self.safe_input("Enter company name: ")
+        company_name = self.get_current_company()
         if not company_name:
-            print("❌ Company name cannot be empty.")
-            return
-            
-        # Check if company exists
-        company_file = self.data_dir / f"{company_name.lower().replace(' ', '_')}_data.json"
-        if not company_file.exists():
-            print(f"❌ Company '{company_name}' not found. Add the company first.")
             return
             
         sitemap_url = self.safe_input("Enter sitemap URL: ")
@@ -203,21 +263,17 @@ class CompetitiveIntelligenceCLI:
                 
         except Exception as e:
             print(f"❌ Error during sitemap analysis: {e}")
+        
+        # Always wait for user to press Enter before returning to menu
+        self.safe_input("\nPress Enter to continue...")
 
     def run_analysis_prompt(self):
         """Run analysis prompt on company data"""
         print("\n🔍 Run Analysis Prompt")
         print("-" * 30)
         
-        company_name = self.safe_input("Enter company name: ")
+        company_name = self.get_current_company()
         if not company_name:
-            print("❌ Company name cannot be empty.")
-            return
-            
-        # Check if company exists
-        company_file = self.data_dir / f"{company_name.lower().replace(' ', '_')}_data.json"
-        if not company_file.exists():
-            print(f"❌ Company '{company_name}' not found. Add the company first.")
             return
         
         # Get available data sources
@@ -236,22 +292,38 @@ class CompetitiveIntelligenceCLI:
             print(f"{i}. {source}")
         print(f"{len(available_sources) + 1}. all (combine all data)")
         
-        # Get data source selection
+        # Get data source selection (multiple selection support)
+        print(f"\n💡 You can select multiple sources by separating numbers with commas (e.g., 1,3,5)")
+        print(f"💡 Or select 'all' by entering: {len(available_sources) + 1}")
+        
         try:
-            choice_input = self.safe_input(f"\nSelect data source (1-{len(available_sources) + 1}): ")
+            choice_input = self.safe_input(f"\nSelect data source(s) (1-{len(available_sources) + 1}): ")
             if not choice_input:
                 print("❌ No input provided.")
                 return
-            choice = int(choice_input)
-            if 1 <= choice <= len(available_sources):
-                data_source = available_sources[choice - 1]
-            elif choice == len(available_sources) + 1:
-                data_source = 'all'
+            
+            # Handle multiple selections
+            if ',' in choice_input:
+                # Multiple selections
+                choices = [int(x.strip()) for x in choice_input.split(',')]
+                if all(1 <= choice <= len(available_sources) for choice in choices):
+                    data_sources = [available_sources[choice - 1] for choice in choices]
+                    data_source = data_sources  # List of selected sources
+                else:
+                    print("❌ Invalid choice(s). All selections must be between 1 and", len(available_sources))
+                    return
             else:
-                print("❌ Invalid choice.")
-                return
+                # Single selection
+                choice = int(choice_input)
+                if 1 <= choice <= len(available_sources):
+                    data_source = available_sources[choice - 1]
+                elif choice == len(available_sources) + 1:
+                    data_source = 'all'
+                else:
+                    print("❌ Invalid choice.")
+                    return
         except ValueError:
-            print("❌ Invalid input.")
+            print("❌ Invalid input. Please enter numbers separated by commas.")
             return
         
         # Get analysis prompt
@@ -291,15 +363,17 @@ class CompetitiveIntelligenceCLI:
             
         except Exception as e:
             print(f"❌ Error during analysis: {e}")
+        
+        # Always wait for user to press Enter before returning to menu
+        self.safe_input("\nPress Enter to continue...")
 
     def view_company_data(self):
         """View detailed company data"""
         print("\n👁️ View Company Data")
         print("-" * 30)
         
-        company_name = self.safe_input("Enter company name: ")
+        company_name = self.get_current_company()
         if not company_name:
-            print("❌ Company name cannot be empty.")
             return
             
         company_file = self.data_dir / f"{company_name.lower().replace(' ', '_')}_data.json"
@@ -343,9 +417,77 @@ class CompetitiveIntelligenceCLI:
         except Exception as e:
             print(f"❌ Error reading company data: {e}")
     
+    def scrape_pricing_data(self):
+        """Scrape pricing and availability data for a company"""
+        print("\n💰 Scrape Pricing & Availability Data")
+        print("-" * 30)
+        
+        company_name = self.get_current_company()
+        if not company_name:
+            return
+            
+        url = self.safe_input("Enter pricing page URL: ")
+        if not url:
+            print("❌ URL cannot be empty.")
+            return
+            
+        # Validate URL format
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+            
+        # Run the price scraper
+        try:
+            scraper = PriceStockScraper()
+            success = asyncio.run(scraper.scrape_and_save_pricing(company_name, url))
+            
+            if success:
+                print(f"\n✅ Pricing data scraping completed for {company_name}")
+            else:
+                print(f"\n❌ Pricing data scraping failed for {company_name}")
+                
+        except Exception as e:
+            print(f"❌ Error during pricing scraping: {e}")
+        
+        # Always wait for user to press Enter before returning to menu
+        self.safe_input("\nPress Enter to continue...")
+    
+    def scrape_seo_data(self):
+        """Scrape SEO and meta tag data for a company"""
+        print("\n🔍 Analyze SEO & Meta Tags")
+        print("-" * 30)
+        
+        company_name = self.get_current_company()
+        if not company_name:
+            return
+            
+        url = self.safe_input("Enter page URL to analyze: ")
+        if not url:
+            print("❌ URL cannot be empty.")
+            return
+            
+        # Validate URL format
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+            
+        # Run the SEO scraper
+        try:
+            scraper = MetaSEOScraper()
+            success = asyncio.run(scraper.scrape_and_save_seo(company_name, url))
+            
+            if success:
+                print(f"\n✅ SEO analysis completed for {company_name}")
+            else:
+                print(f"\n❌ SEO analysis failed for {company_name}")
+                
+        except Exception as e:
+            print(f"❌ Error during SEO analysis: {e}")
+        
+        # Always wait for user to press Enter before returning to menu
+        self.safe_input("\nPress Enter to continue...")
+    
     def run(self):
         """Main CLI loop"""
-        print("🚀 Starting Competitive Intelligence CLI...")
+        print("🚀 Starting B2B Competitive Intelligence CLI...")
         
         while True:
             try:
@@ -363,17 +505,21 @@ class CompetitiveIntelligenceCLI:
                 elif choice == 4:
                     self.run_analysis_prompt()
                 elif choice == 5:
-                    print("🔧 Update checking - Coming soon!")
+                    self.scrape_pricing_data()
                 elif choice == 6:
-                    self.view_company_data()
+                    self.scrape_seo_data()
                 elif choice == 7:
-                    self.list_companies()
+                    self.view_company_data()
                 elif choice == 8:
+                    self.list_companies()
+                elif choice == 9:
                     print("👋 Goodbye!")
+                    self.current_company = None  # Clear session
                     break
                     
             except KeyboardInterrupt:
                 print("\n👋 Goodbye!")
+                self.current_company = None  # Clear session
                 break
             except Exception as e:
                 print(f"❌ Unexpected error: {e}")
